@@ -1,14 +1,33 @@
 import { getBloodPressureByUserId, addBloodPressure,updateBloodPressure, deleteBloodPressure } from '../models/bloodpressure-model.js';
 
 const getBloodPressures = async (req, res) => {  //  async koska tietokanta haku -> voi kestää
- try {
-    // nyt tässä testikäyttäjä
-    const userId = 1; 
+ 
+  try {
+    
+    const userId = req.user.user_id; // haetaan tokenista
     const result = await getBloodPressureByUserId(userId);
     res.json(result);
   } catch (e) {
     console.error('error', e.message);
     res.status(500).json({message: 'error fetching blood pressures'});
+  }
+};
+
+// haetaan yksittäinen mittaustulos ID:n perusteella
+const getBloodPressureById = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.user_id;
+
+  try {
+    const result = await getBloodPressureById(id, userId);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(404).json({ message: 'Entry not found or not authorized' });
+    }
+  } catch (e) {
+    console.error('error', e.message);
+    res.status(500).json({ message: 'Error fetching blood pressure entry' });
   }
 };
 // lisätään uusi verenpainemittaus tietokantaan
@@ -24,7 +43,7 @@ const postBloodPressure = async (req, res) => {
     // kootaan data objektiin. Jos pulse tai notes puuttuu, käytetään nullia/tyhjää.
     // jos measured_at puuttuu, tietokanta voi käyttää oletusarvoa tai voit antaa sen tässä.
     const result = await addBloodPressure({
-      user_id: 1, // Testataan kiinteällä id:llä 1
+      user_id: req.user.user_id, // haetaan kirjautuneen käyttäjän id tokenista
       systolic,
       diastolic,
       pulse: pulse || null, // annetaan OR oletusarvo 
@@ -45,7 +64,7 @@ const putBloodPressure = async (req, res) => {
   const { id } = req.params; // ID tulee URL-osoitteesta, esim. /api/bloodpressure/6
   
   const { systolic, diastolic, pulse, notes } = req.body;
-  const userId = 1; // Testikäyttäjä
+  const userId = req.user.user_id; // haetaan tokenista
 
   // Perusvalidointi: ylä- ja alapaine ovat pakollisia [cite: 13]
   if (!systolic || !diastolic) {
@@ -74,7 +93,7 @@ const putBloodPressure = async (req, res) => {
 // Poistetaan merkintä
 const deleteBloodPressureEntry = async (req, res) => {
   const { id } = req.params;
-  const userId = 1; // Testikäyttäjä
+  const userId = req.user.user_id; // haetaan tokenista
  
   try {
     const success = await deleteBloodPressure(id, userId);
@@ -91,7 +110,7 @@ const deleteBloodPressureEntry = async (req, res) => {
 };
 
 
-export { getBloodPressures, postBloodPressure, putBloodPressure, deleteBloodPressureEntry };
+export { getBloodPressures, postBloodPressure, putBloodPressure, deleteBloodPressureEntry, getBloodPressureById };
 
 
 

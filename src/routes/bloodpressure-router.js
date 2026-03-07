@@ -5,6 +5,7 @@ import {
   putBloodPressure,
   deleteBloodPressureEntry,
   } from '../controllers/bloodpressure-controller.js';
+import { authenticateToken } from '../middlewares/authentication.js';  
 
 const bloodPressureRouter = express.Router();
 
@@ -14,21 +15,16 @@ bloodPressureRouter
   // define route
   .route('/')
   // hae käyttäjän kaikki verenpaineen mittaustulokset
-  .get(getBloodPressures)
+  .get(authenticateToken, getBloodPressures)
   // lisää käyttäjän uusi verenpaineen mittaustulos
-  .post(postBloodPressure);
+  .post(authenticateToken, postBloodPressure);
 
 // mittaustuloksen muutos ID:n mukaan  polkuun /api/bloodpressure/**)
 bloodPressureRouter
   .route('/:id')
-  .put(putBloodPressure)           // muokkaa olemassa olevaa 
-  .delete(deleteBloodPressureEntry); // poista  
+  .put(authenticateToken, putBloodPressure)           // muokkaa olemassa olevaa 
+  .delete(authenticateToken, deleteBloodPressureEntry); // poista  mittaustulos
 
-// Clauden debuggausta
-bloodPressureRouter.delete('/test', (req, res) => {
-  res.json({ test: 'router toimii' });
-});
-// tähän asti
 
 
 export default bloodPressureRouter;

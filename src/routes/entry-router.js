@@ -16,7 +16,7 @@ entryRouter
 
 entryRouter
   .route('/:id')
-  .get(getEntryById)
+  .get(authenticateToken, getEntryById) // lisätty authenticateToken
   .delete(authenticateToken, deleteEntry);
 
 export default entryRouter;

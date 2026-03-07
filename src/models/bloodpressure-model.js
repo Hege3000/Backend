@@ -1,6 +1,6 @@
 import promisePool from '../utils/database.js';
 
-// haetaan mittaustulos mittaustuloksen ID: perusteella
+// haetaan mittaustulokset käyttäjän ID: perusteella
 const getBloodPressureByUserId = async (userId) => {
   const [rows] = await promisePool.query(
     'SELECT * FROM BloodPressure WHERE user_id = ? ORDER BY measured_at DESC',
@@ -8,6 +8,34 @@ const getBloodPressureByUserId = async (userId) => {
   );
   return rows;
 };
+
+// haetaan yksittäinen mittaustulos bp_id:n ja user_id:n perusteella
+const getBloodPressureById = async (bpId, userId) => {
+  const [rows] = await promisePool.query(
+    'SELECT * FROM BloodPressure WHERE bp_id = ? AND user_id = ?',
+    [bpId, userId]
+  );
+  return rows[0]; // palautetaan yksi rivi tai undefined
+};
+
+// haetaan mittaukset yksittäisen päivämäärän perusteella
+const getBloodPressuresByDate = async (userId, date) => {
+  const [rows] = await promisePool.query(
+    'SELECT * FROM BloodPressure WHERE user_id = ? AND DATE(measured_at) = ? ORDER BY measured_at DESC',
+    [userId, date]
+  );
+  return rows;
+};
+
+// haetaan mittaukset aikavälin perusteella
+const getBloodPressuresByRange = async (userId, from, to) => {
+  const [rows] = await promisePool.query(
+    'SELECT * FROM BloodPressure WHERE user_id = ? AND DATE(measured_at) BETWEEN ? AND ? ORDER BY measured_at DESC',
+    [userId, from, to]
+  );
+  return rows;
+};
+
 // lisätään mittaustulos ja annetaan sille ID
 const addBloodPressure = async (bpData) => {
   const { user_id, systolic, diastolic, pulse, measured_at, notes } = bpData;
@@ -38,4 +66,4 @@ const deleteBloodPressure = async (bpId, userId) => {
 
 
 
-export { getBloodPressureByUserId, addBloodPressure, updateBloodPressure, deleteBloodPressure  };
+export { getBloodPressureByUserId, getBloodPressureById, getBloodPressuresByDate,getBloodPressuresByRange, addBloodPressure, updateBloodPressure, deleteBloodPressure  };
