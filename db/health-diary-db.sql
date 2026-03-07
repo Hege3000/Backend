@@ -25,24 +25,16 @@ CREATE TABLE DiaryEntries (
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
-CREATE TABLE Medications (
-    medication_id INT AUTO_INCREMENT PRIMARY KEY,
+-- taulu verenpaineen manuaalista merkitää varten 
+CREATE TABLE BloodPressure (
+    bp_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    dosage VARCHAR(50),
-    frequency VARCHAR(50),
-    start_date DATE,
-    end_date DATE,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id)
-);
-
-CREATE TABLE Exercises (
-    exercise_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    type VARCHAR(100) NOT NULL,
-    duration INT NOT NULL,
-    intensity VARCHAR(50),
-    date DATE,
+    systolic INT NOT NULL, -- Yläpaine
+    diastolic INT NOT NULL, -- Alapaine
+    pulse INT, -- Syke (valinnainen)
+    measured_at DATETIME NOT NULL, -- mittaushetki
+    notes TEXT,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- koska kirjattu kantaan
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
@@ -61,18 +53,10 @@ INSERT INTO DiaryEntries (user_id, entry_date, mood, weight, sleep_hours, notes,
 (4, '2024-01-13', 'Energetic', 55.0, 9, 'Went for a morning run', '2024-01-13 18:00:00'),
 (4, '2024-01-14', 'Relaxed', 75.0, 8, 'Spent the day reading', '2024-01-14 19:00:00');
 
-INSERT INTO Medications (user_id, name, dosage, frequency, start_date, end_date) VALUES
-(1, 'Vitamin D', '1000 IU', 'Daily', '2024-01-01', '2024-06-01'),
-(2, 'Ibuprofen', '200 mg', 'As needed', '2024-01-05', '2024-01-20'),
-(2, 'Amoxicillin', '500 mg', 'Every 8 hours', '2024-01-10', '2024-01-20'),
-(4, 'Metformin', '500 mg', 'Twice a day', '2024-01-15', '2024-07-15'),
-(2, 'Lisinopril', '10 mg', 'Daily', '2024-01-20', '2024-07-20');
+INSERT INTO BloodPressure (user_id, systolic, diastolic, pulse, measured_at, notes) VALUES
+(1, 120, 80, 65, '2026-03-01 08:00:00', 'Aamumittaus, levännyt olo.'),
+(1, 145, 95, 72, '2026-03-02 14:30:00', 'Stressaava työpäivä, kahvia juotu juuri ennen.'),
+(1, 118, 78, 85, '2026-03-03 18:00:00', 'Lenkin jälkeen, syke vielä hieman koholla.'),
+(1, 122, 82, 60, '2026-03-04 07:15:00', NULL), -- Testataan null-arvoa muistiinpanoissa
+(1, 138, 88, 70, '2026-03-05 21:00:00', 'Iltamittaus ennen nukkumaanmenoa.');
 
-INSERT INTO Exercises (user_id, type, duration, intensity, date) VALUES
-(1, 'Running', 30, 'High', '2024-01-10'),
-(3, 'Cycling', 45, 'Medium', '2024-01-11'),
-(2, 'Swimming', 55, 'Low', '2024-01-12'),
-(1, 'Swimming', 30, 'Medium', '2024-01-16'),
-(3, 'Swimming', 60, 'Low', '2024-01-18'),
-(3, 'Yoga', 50, 'Low', '2024-01-18'),
-(1, 'Weight Training', 40, 'High', '2024-01-19');

@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import itemRouter from './routes/item-router.js';
+import bloodPressureRouter from './routes/bloodpressure-router.js';
 import userRouter from './routes/user-router.js';
 import requestLogger from './middlewares/logger.js';
 import entryRouter from './routes/entry-router.js';
@@ -25,12 +25,12 @@ app.get('/api', (req, res) => {
 
 // Users resource router for all /api/users routes
 app.use('/api/users', userRouter);
-// Diary entries resource router
+// Diary entries resource router 
 app.use('/api/entries', entryRouter);
 
 
-// Dummy items resource
-app.use('/api/items', itemRouter);
+// vaihdettu lennossa verenpaineeksi (Dummy items resource) 
+app.use('/api/bloodpressure', bloodPressureRouter);
 
 app.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
