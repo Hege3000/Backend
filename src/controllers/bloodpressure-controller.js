@@ -43,6 +43,7 @@ const postBloodPressure = async (req, res) => {
 // Päivitetään olemassa oleva merkintä
 const putBloodPressure = async (req, res) => {
   const { id } = req.params; // ID tulee URL-osoitteesta, esim. /api/bloodpressure/6
+  
   const { systolic, diastolic, pulse, notes } = req.body;
   const userId = 1; // Testikäyttäjä
 
@@ -74,10 +75,10 @@ const putBloodPressure = async (req, res) => {
 const deleteBloodPressureEntry = async (req, res) => {
   const { id } = req.params;
   const userId = 1; // Testikäyttäjä
-
+ 
   try {
     const success = await deleteBloodPressure(id, userId);
-
+    
     if (success) {
       res.json({ message: 'Blood pressure entry deleted' });
     } else {

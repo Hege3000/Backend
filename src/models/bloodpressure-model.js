@@ -17,7 +17,7 @@ const addBloodPressure = async (bpData) => {
   return { bp_id: result.insertId };
 };
 
-// mahdollisuus päivittää/muokata tallennettua päivitystä mittauksen ID:n perusteella 
+// mahdollisuus päivittää/muokata tallennettua mittaustulosta mittauksen ID:n perusteella 
 const updateBloodPressure = async (bpId, userId, bpData) => {
   const { systolic, diastolic, pulse, notes } = bpData;
   const sql = `UPDATE BloodPressure 

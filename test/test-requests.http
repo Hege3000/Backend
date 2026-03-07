@@ -92,3 +92,33 @@ Authorization: Bearer {{token}}
   "sleep_hours": 5,
   "notes": "normipäivä"
 }
+##############################
+### Blood Pressure endpoints
+
+### Hae kaikki verenpaineet
+GET {{apiurl}}/bloodpressure
+
+### Lisää uusi mittaus (POST)
+POST {{apiurl}}/bloodpressure
+Content-Type: application/json
+
+{
+  "systolic": 135,
+  "diastolic": 88,
+  "pulse": 72,
+  "notes": "Testi HTTP-tiedostosta"
+}
+
+### Päivitä mittaus (PUT) - muuta ID (esim. 6) vastaamaan kantaasi
+PUT {{apiurl}}/bloodpressure/5
+Content-Type: application/json
+
+{
+  "systolic": 110,
+  "diastolic": 70,
+  "pulse": 65,
+  "notes": "Päivitetty arvo"
+}
+
+### Poista mittaus (DELETE) - muuta ID vastaamaan kantaasi
+DELETE {{apiurl}}/bloodpressure/8

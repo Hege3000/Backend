@@ -13,15 +13,8 @@ app.use(cors());
 
 // parsitaan json data pyynnöstä ja lisätään request-objektiin
 app.use(express.json());
-// tarjoillaan webbisivusto (front-end) palvelimen juuressa
-app.use('/', express.static('public'));
 // Oma loggeri middleware, käytössä koko sovelluksen laajuisesti eli käsittee kaikki http-pyynnöt
 app.use(requestLogger);
-
-// API root
-app.get('/api', (req, res) => {
-  res.send('Teacher example Health Diary API!');
-});
 
 // Users resource router for all /api/users routes
 app.use('/api/users', userRouter);
@@ -29,8 +22,20 @@ app.use('/api/users', userRouter);
 app.use('/api/entries', entryRouter);
 
 
+
 // vaihdettu lennossa verenpaineeksi (Dummy items resource) 
 app.use('/api/bloodpressure', bloodPressureRouter);
+
+// API root
+app.get('/api', (req, res) => {
+  res.send('Teacher example Health Diary API!');
+});
+
+
+// tarjoillaan webbisivusto (front-end) palvelimen juuressa
+app.use('/', express.static('public'));
+
+
 
 app.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
