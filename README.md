@@ -49,13 +49,8 @@ BloodPressure
 
 ## Kuvakaappaukset
 
-> Lisää tähän kuvakaappaukset sovelluksen keskeisistä näkymistä:
-> - Etusivu (`index.html`)
-> - Kirjautumissivu (`login.html`)
-> - Päiväkirjanäkymä (`paivakirja.html`)
-> - Verenpainenäkymä (`verenpaine.html`)
-> - BMI-laskuri (`bmi.html`)
-
+Katso sovelluksen käyttöliittymä frontend-reposta:
+https://github.com/Hege3000/frontend-vite/tree/week8-palautus
 ---
 
 ## Tekninen arkkitehtuuri
@@ -64,9 +59,9 @@ BloodPressure
 
 | Kerros | Tiedostot |
 |--------|-----------|
-| Routes | `entry-router.js`, `item-router.js`, `user-router.js` |
-| Controllers | `entry-controller.js`, `item-controller.js`, `user-controller.js` |
-| Models | `entry-model.js`, `item-model.js`, `user-model.js` |
+| Routes | `entry-router.js`, `bloodpressure-router.js`, `user-router.js` |
+| Controllers | `entry-controller.js`, `bloodpressure-controller.js`, `user-controller.js` |
+| Models | `entry-model.js`, `bloodpressure-model.js`, `user-model.js` |
 | Middlewares | `authentication.js` (JWT), `logger.js` |
 | Utils | `database.js` (mysql2-pool) |
 
@@ -89,19 +84,20 @@ BloodPressure
 ## API-endpointit
 
 ```
-POST   /api/auth/login          Kirjautuminen, palauttaa JWT-tokenin
-POST   /api/users               Rekisteröityminen
+POST   /api/users/login             Kirjautuminen, palauttaa JWT-tokenin
+POST   /api/users                   Rekisteröityminen
 
-GET    /api/entries             Omat päiväkirjamerkinnät
-POST   /api/entries             Uusi merkintä
-GET    /api/entries/:id         Yksittäinen merkintä
-PUT    /api/entries/:id         Päivitä merkintä
-DELETE /api/entries/:id         Poista merkintä
+GET    /api/entries                 Omat päiväkirjamerkinnät
+POST   /api/entries                 Uusi merkintä
+GET    /api/entries/:id             Yksittäinen merkintä
+PUT    /api/entries/:id             Päivitä merkintä
+DELETE /api/entries/:id             Poista merkintä
 
-GET    /api/items               Verenpainemittaukset (+ päivämääräsuodatus)
-POST   /api/items               Uusi mittaus
-PUT    /api/items/:id           Päivitä mittaus
-DELETE /api/items/:id           Poista mittaus
+GET    /api/bloodpressure           Verenpainemittaukset (+ päivämääräsuodatus)
+POST   /api/bloodpressure           Uusi mittaus
+GET    /api/bloodpressure/:id       Yksittäinen mittaus
+PUT    /api/bloodpressure/:id       Päivitä mittaus
+DELETE /api/bloodpressure/:id       Poista mittaus
 ```
 
 Kaikki suojatut reitit vaativat otsikossa: `Authorization: Bearer <token>`
@@ -139,15 +135,11 @@ mysql -u käyttäjä -p tietokanta < db/health-diary-db.sql
 
 ## Julkaisu (users.metropolia.fi)
 
+Frontend on julkaistu Metropolian palvelimella. Backend käynnistetään paikallisesti esittelytilaisuudessa:
+
 ```bash
-# 1. Buildaa frontend
-cd FE && npm run build
-
-# 2. Kopioi dist-kansio palvelimelle
-scp -r dist/ tunnus@users.metropolia.fi:~/public_html/terveyspaivakirja/
+cd BE && npm run dev
 ```
-
-Backend käynnistetään Metropolian palvelimella erikseen (esim. PM2 tai vastaava).
 
 ---
 
@@ -166,7 +158,7 @@ Backend käynnistetään Metropolian palvelimella erikseen (esim. PM2 tai vastaa
 
 ### AI:n hyödyntäminen
 
-Projektissa on hyödynnetty tekoälyä (Claude, Anthropic) seuraavissa kohdissa:
+Projektissa on hyödynnetty tekoälyä (Claude, Anthropic ja ChatGPT) seuraavissa kohdissa:
 
 - Backend-rakenne ja MVC-arkkitehtuurin suunnittelu
 - Express-validator-validointisääntöjen kirjoittaminen
@@ -175,7 +167,7 @@ Projektissa on hyödynnetty tekoälyä (Claude, Anthropic) seuraavissa kohdissa:
 - vite.config.js multi-page-konfiguraatio
 - README.md:n kirjoittaminen
 
-**Koodikommenteissa** AI:n tuottamat tai sen avulla kirjoitetut osuudet on merkitty kommentilla `// AI-assisted` tai `/* AI: ... */`.
+**Koodikommenteissa** AI:n tuottamat tai sen avulla kirjoitetut osuudet on merkitty kommentilla `// AI-assisted`.
 
 Opiskelija on tarkistanut, ymmärtää ja osaa selittää kaiken koodissa olevan logiikan.
 
@@ -183,6 +175,6 @@ Opiskelija on tarkistanut, ymmärtää ja osaa selittää kaiken koodissa olevan
 
 ## Linkit
 
-- 🌐 Julkaistu sovellus: `https://users.metropolia.fi/~tunnus/terveyspaivakirja/`
-- 📁 Frontend-repo: *(lisää GitHub-linkki)*
-- 📁 Backend-repo: *(lisää GitHub-linkki)*
+- 🌐 Julkaistu sovellus: https://users.metropolia.fi/~henrijja/HYTE-kevat-26/Frontend/
+- 📁 Frontend-repo: https://github.com/Hege3000/frontend-vite/tree/week8-palautus
+- 📁 Backend-repo: https://github.com/Hege3000/backend/tree/week8-palautus

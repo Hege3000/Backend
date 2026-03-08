@@ -1,6 +1,6 @@
 import promisePool from '../utils/database.js';
 
-
+// TODO: lisää modelit ja muokkaa kontrollerit reiteille:  - tehty, minä ja Calude
 // GET /api/users - listaa kaikki käyttäjät
 const listAllUsers = async () => {
   const sql = 'SELECT username, created_at FROM Users';
@@ -68,7 +68,7 @@ const findUserByUsername = async (username) => {
   }
 };
 
-// TODO: lisää modelit ja muokkaa kontrollerit reiteille:  - tehty, minä ja Calude
+
 
 
 export {findUserByUsername, addUser, listAllUsers, findUserById, updateUser, removeUser };

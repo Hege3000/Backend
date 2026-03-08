@@ -2,8 +2,6 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import {addUser, findUserByUsername, listAllUsers, findUserById, updateUser, removeUser} from '../models/user-model.js';
 
-// TODO: lisää tietokantafunktiot user modeliin
-// ja käytä niitä täällä
 
 // TODO: getUserById - tehty minä ja Claude 
 // TODO: putUserById - tehty minä ja Claude
@@ -62,7 +60,7 @@ const postLogin = async (req, res) => {
 const getMe = (req, res) => {
   res.json(req.user);
 };
-// hae käyttäjä ID:n perusteella
+// hae käyttäjä ID:n perusteella - AI-assisted
 const getUserById = async (req, res) => {
   const userId = req.params.id;
   try {
@@ -78,7 +76,7 @@ const getUserById = async (req, res) => {
   }
 };
 
-// päivitä käyttäjän tiedot - vain oma profiili
+// päivitä käyttäjän tiedot - vain oma profiili - AI-assisted
 const putUser = async (req, res) => {
   const userId = req.params.id;
   const {username, email} = req.body;
@@ -101,7 +99,7 @@ const putUser = async (req, res) => {
   }
 };
 
-// poista käyttäjä - vain oma profiili
+// poista käyttäjä - vain oma profiili - AI-assisted
 const deleteUser = async (req, res) => {
   const userId = req.params.id;
 

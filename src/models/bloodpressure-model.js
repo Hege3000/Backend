@@ -1,3 +1,4 @@
+// AI-assisted: koko tiedosto toteutettu AI:n avulla entry-model.js -rakennetta mallina käyttäen
 import promisePool from '../utils/database.js';
 
 // haetaan mittaustulokset käyttäjän ID: perusteella

@@ -16,7 +16,7 @@ entryRouter
   .route('/')
   .get(authenticateToken, getEntries)
   .post(
-    // validointisäännöt
+    // validointisäännöt - AI-assisted
     authenticateToken,
     body('entry_date', 'päivämäärä on pakollinen ja sen pitää olla muodossa YYYY-MM-DD')
       .isDate(),

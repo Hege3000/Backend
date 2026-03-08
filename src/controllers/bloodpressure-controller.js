@@ -1,3 +1,4 @@
+// AI-assisted: koko tiedosto toteutettu AI:n avulla opettajan entry-controller.js -rakennetta mallina käyttäen
 import {
   getBloodPressureByUserId,
   getBloodPressureEntry,

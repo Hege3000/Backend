@@ -20,6 +20,7 @@ const getEntries = async (req, res) => {
   }
 };
 
+// haetaan yksittäinen merkintä ID:n perusteella
 const getEntryById = async (req, res) => {
   const entry = await findEntryById(req.params.id);
   if (entry) {
@@ -29,11 +30,12 @@ const getEntryById = async (req, res) => {
   }
 };
 
+// lisätään uusi päiväkirjamerkintä tietokantaan
 const postEntry = async (req, res) => {
   const {mood, weight, sleep_hours, notes} = req.body;
   const user_id = req.user.user_id;
   
-  // tarkistetaan että vähintään yksi vapaaehtoinen kenttä on täytetty
+  // tarkistetaan että vähintään yksi vapaaehtoinen kenttä on täytetty - AI-assisted
   if (!mood && !weight && !sleep_hours && !notes) {
     return res.status(400).json({message: 'Anna vähintään yksi arvo päivämäärän lisäksi'});
   }
@@ -46,6 +48,7 @@ const postEntry = async (req, res) => {
   }
 };
 
+// päivitetään olemassa oleva merkintä ID:n perusteella - AI-assisted
 const putEntry = async (req, res) => {
   const { entry_date, mood, weight, sleep_hours, notes } = req.body;
   const entryId = req.params.id;
@@ -66,6 +69,7 @@ const putEntry = async (req, res) => {
   }
 };
 
+// poistetaan merkintä ID:n perusteella, vain oma merkintä
 const deleteEntry = async (req, res) => {
   const affectedRows = await removeEntryById(req.params.id, req.user.user_id);
   if (affectedRows > 0) {
