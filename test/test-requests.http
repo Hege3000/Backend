@@ -1,7 +1,7 @@
 # Test HTTP requests
 ### use with: REST Client extension
 @apiurl = http://localhost:3000/api
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo3LCJ1c2VybmFtZSI6ImRvbmFsZDg4IiwiZW1haWwiOiJkb25hbGQ4OEBleGFtcGxlLmNvbSIsImNyZWF0ZWRfYXQiOiIyMDI2LTAzLTA3VDIwOjI4OjEwLjAwMFoiLCJ1c2VyX2xldmVsIjoicmVndWxhciIsImlhdCI6MTc3MjkxNTYxMiwiZXhwIjoxNzczMDAyMDEyfQ.t4Q-s8aOwgJ8egOTsAdkFB9TVDna0qtbAaAjIWNTFTQ
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo5LCJ1c2VybmFtZSI6ImRvbmFsZDU1NSIsImVtYWlsIjoiZG9uYWxkNTU1QGV4YW1wbGUuY29tIiwiY3JlYXRlZF9hdCI6IjIwMjYtMDMtMDhUMTA6MTY6MDUuMDAwWiIsInVzZXJfbGV2ZWwiOiJyZWd1bGFyIiwiaWF0IjoxNzcyOTY1MDgzLCJleHAiOjE3NzMwNTE0ODN9.mOjM8xMm2zAss6w_56V981-B37ehLxkJld0kpKcdB-8
 
 
 ##############################
@@ -19,9 +19,9 @@ POST {{apiurl}}/users
 Content-Type: application/json
 
 {
-  "username": "donald88",
-  "password": "duck",
-  "email": "donald88@example.com"
+  "username": "donald555",
+  "password": "du12345677ck",
+  "email": "donald555@example.com"
 }
 
 ### Register new user FAIL (email missing)
@@ -38,14 +38,31 @@ POST {{apiurl}}/users/login
 Content-Type: application/json
 
 {
-  "username": "donald88",
-  "password": "duck"
+  "username": "donald555",
+  "password": "du12345677ck"
 }
 
 ### Get user info by token
 GET {{apiurl}}/users/me
 Authorization: Bearer {{token}}
 
+### Hae käyttäjä ID:llä
+GET {{apiurl}}/users/9
+Authorization: Bearer {{token}}
+
+### Päivitä käyttäjän tiedot
+PUT {{apiurl}}/users/7
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "username": "donald3",
+  "email": "donald3@example.com"
+}
+
+### Poista käyttäjä
+DELETE {{apiurl}}/users/9
+Authorization: Bearer {{token}}
 
 ##############################
 ### Diary entry endpoints
@@ -74,11 +91,37 @@ Authorization: Bearer {{token}}
   "sleep_hours": 5,
   "notes": "normipäivä"
 }
+
+### Modify entry by id
+PUT {{apiurl}}/entries/10
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "entry_date": "2026-02-04",
+  "mood": "tired",
+  "weight": 67,
+  "sleep_hours": 6,
+  "notes": "päivitetty merkintä"
+}
+
 ##############################
 ### Blood Pressure endpoints
 
 ### Hae kaikki verenpaineet
 GET {{apiurl}}/bloodpressure
+Authorization: Bearer {{token}}
+
+### Hae mittaukset tietyltä päivältä
+GET {{apiurl}}/bloodpressure?date=2026-03-07
+Authorization: Bearer {{token}}
+
+### Hae mittaukset aikaväliltä
+GET {{apiurl}}/bloodpressure?from=2026-03-01&to=2026-03-05
+Authorization: Bearer {{token}}
+
+### Hae yksittäinen mittaus ID:llä
+GET {{apiurl}}/bloodpressure/1
 Authorization: Bearer {{token}}
 
 ### Lisää uusi mittaus (POST)
@@ -89,12 +132,12 @@ Content-Type: application/json
 {
   "systolic": 135,
   "diastolic": 88,
-  "pulse": 72,
+  "pulse": 22,
   "notes": "Testi HTTP-tiedostosta"
 }
 
 ### Päivitä mittaus (PUT) - muuta ID (esim. 6) vastaamaan kantaasi
-PUT {{apiurl}}/bloodpressure/14
+PUT {{apiurl}}/bloodpressure/18
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
@@ -106,5 +149,5 @@ Content-Type: application/json
 }
 
 ### Poista mittaus (DELETE) - muuta ID vastaamaan kantaasi
-DELETE {{apiurl}}/bloodpressure/14
+DELETE {{apiurl}}/bloodpressure/18
 Authorization: Bearer {{token}}

@@ -4,6 +4,7 @@ import {
   addEntry,
   listAllEntriesByUserId,
   removeEntryById,
+  updateEntry,
 } from '../models/entry-model.js';
 
 const getEntries = async (req, res) => {
@@ -29,26 +30,40 @@ const getEntryById = async (req, res) => {
 };
 
 const postEntry = async (req, res) => {
-  const {entry_date, mood, weight, sleep_hours, notes} = req.body;
-  // user property (& id) is added to req by authentication middleware
+  const {mood, weight, sleep_hours, notes} = req.body;
   const user_id = req.user.user_id;
-  if (entry_date && (weight || mood || sleep_hours || notes) && user_id) {
-    const result = await addEntry({user_id, ...req.body});
-    if (result.entry_id) {
-      res.status(201);
-      res.json({message: 'New entry added.', ...result});
-    } else {
-      res.status(500);
-      res.json(result);
-    }
+  
+  // tarkistetaan että vähintään yksi vapaaehtoinen kenttä on täytetty
+  if (!mood && !weight && !sleep_hours && !notes) {
+    return res.status(400).json({message: 'Anna vähintään yksi arvo päivämäärän lisäksi'});
+  }
+
+  const result = await addEntry({user_id, ...req.body});
+  if (result.entry_id) {
+    res.status(201).json({message: 'New entry added.', ...result});
   } else {
-    res.sendStatus(400);
+    res.status(500).json(result);
   }
 };
 
-const putEntry = (req, res) => {
-  // placeholder for future implementation
-  res.sendStatus(200);
+const putEntry = async (req, res) => {
+  const { entry_date, mood, weight, sleep_hours, notes } = req.body;
+  const entryId = req.params.id;
+  const userId = req.user.user_id;
+
+  // vähintään yksi kenttä täytyy olla mukana
+  if (!entry_date && !mood && !weight && !sleep_hours && !notes) {
+    return res.status(400).json({ message: 'At least one field is required' });
+  }
+
+  const result = await updateEntry(entryId, userId, { entry_date, mood, weight, sleep_hours, notes });
+  if (result === true) {
+    res.json({ message: 'Entry updated' });
+  } else if (result.error) {
+    res.status(500).json(result);
+  } else {
+    res.status(404).json({ message: 'Entry not found' });
+  }
 };
 
 const deleteEntry = async (req, res) => {

@@ -10,7 +10,7 @@ const getBloodPressureByUserId = async (userId) => {
 };
 
 // haetaan yksittäinen mittaustulos bp_id:n ja user_id:n perusteella
-const getBloodPressureById = async (bpId, userId) => {
+const getBloodPressureEntry = async (bpId, userId) => {
   const [rows] = await promisePool.query(
     'SELECT * FROM BloodPressure WHERE bp_id = ? AND user_id = ?',
     [bpId, userId]
@@ -66,4 +66,4 @@ const deleteBloodPressure = async (bpId, userId) => {
 
 
 
-export { getBloodPressureByUserId, getBloodPressureById, getBloodPressuresByDate,getBloodPressuresByRange, addBloodPressure, updateBloodPressure, deleteBloodPressure  };
+export { getBloodPressureByUserId, getBloodPressureEntry, getBloodPressuresByDate,getBloodPressuresByRange, addBloodPressure, updateBloodPressure, deleteBloodPressure  };

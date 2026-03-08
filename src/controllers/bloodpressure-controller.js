@@ -1,15 +1,34 @@
-import { getBloodPressureByUserId, addBloodPressure,updateBloodPressure, deleteBloodPressure } from '../models/bloodpressure-model.js';
+import {
+  getBloodPressureByUserId,
+  getBloodPressureEntry,
+  getBloodPressuresByDate,
+  getBloodPressuresByRange,
+  addBloodPressure,
+  updateBloodPressure,
+  deleteBloodPressure,
+} from '../models/bloodpressure-model.js';
 
-const getBloodPressures = async (req, res) => {  //  async koska tietokanta haku -> voi kestää
- 
+// haetaan kaikki käyttäjän mittaukset, tai suodatetaan päivämäärän/aikavälin mukaan
+const getBloodPressures = async (req, res) => {
+  const userId = req.user.user_id;
+  const { date, from, to } = req.query; // haetaan query-parametrit URL:sta
+
   try {
-    
-    const userId = req.user.user_id; // haetaan tokenista
-    const result = await getBloodPressureByUserId(userId);
+    let result;
+    if (date) {
+      // ?date=2026-03-01
+      result = await getBloodPressuresByDate(userId, date);
+    } else if (from && to) {
+      // ?from=2026-03-01&to=2026-03-07
+      result = await getBloodPressuresByRange(userId, from, to);
+    } else {
+      // kaikki mittaukset
+      result = await getBloodPressureByUserId(userId);
+    }
     res.json(result);
   } catch (e) {
     console.error('error', e.message);
-    res.status(500).json({message: 'error fetching blood pressures'});
+    res.status(500).json({ message: 'Error fetching blood pressures' });
   }
 };
 
@@ -19,7 +38,7 @@ const getBloodPressureById = async (req, res) => {
   const userId = req.user.user_id;
 
   try {
-    const result = await getBloodPressureById(id, userId);
+    const result = await getBloodPressureEntry(id, userId);
     if (result) {
       res.json(result);
     } else {
@@ -30,28 +49,26 @@ const getBloodPressureById = async (req, res) => {
     res.status(500).json({ message: 'Error fetching blood pressure entry' });
   }
 };
+
 // lisätään uusi verenpainemittaus tietokantaan
 const postBloodPressure = async (req, res) => {
   const { systolic, diastolic, pulse, measured_at, notes } = req.body;
 
-  //  validointi: Verenpaineessa ylä- ja alapaine ovat pakollisia
+  // validointi: ylä- ja alapaine ovat pakollisia
   if (!systolic || !diastolic) {
     return res.status(400).json({ message: 'Systolic and diastolic values are required' });
   }
 
   try {
-    // kootaan data objektiin. Jos pulse tai notes puuttuu, käytetään nullia/tyhjää.
-    // jos measured_at puuttuu, tietokanta voi käyttää oletusarvoa tai voit antaa sen tässä.
     const result = await addBloodPressure({
-      user_id: req.user.user_id, // haetaan kirjautuneen käyttäjän id tokenista
+      user_id: req.user.user_id,
       systolic,
       diastolic,
-      pulse: pulse || null, // annetaan OR oletusarvo 
-      measured_at: measured_at || new Date().toISOString().slice(0, 19).replace('T', ' '), // muokataan JS:n ja SQL:n eroavat aikamuodot MariaDB:lle sopiviksi
-      notes: notes || null
+      pulse: pulse || null,
+      measured_at: measured_at || new Date().toISOString().slice(0, 19).replace('T', ' '),
+      notes: notes || null,
     });
 
-    // palautetaan onnistumisviesti ja uuden rivin ID
     res.status(201).json({ message: 'New blood pressure entry added', id: result.bp_id });
   } catch (e) {
     console.error('error', e.message);
@@ -59,14 +76,12 @@ const postBloodPressure = async (req, res) => {
   }
 };
 
-// Päivitetään olemassa oleva merkintä
+// päivitetään olemassa oleva mittaustulos ID:n perusteella
 const putBloodPressure = async (req, res) => {
-  const { id } = req.params; // ID tulee URL-osoitteesta, esim. /api/bloodpressure/6
-  
+  const { id } = req.params;
   const { systolic, diastolic, pulse, notes } = req.body;
-  const userId = req.user.user_id; // haetaan tokenista
+  const userId = req.user.user_id;
 
-  // Perusvalidointi: ylä- ja alapaine ovat pakollisia [cite: 13]
   if (!systolic || !diastolic) {
     return res.status(400).json({ message: 'Systolic and diastolic values are required' });
   }
@@ -76,28 +91,28 @@ const putBloodPressure = async (req, res) => {
       systolic,
       diastolic,
       pulse: pulse || null,
-      notes: notes || null
+      notes: notes || null,
     });
 
     if (success) {
       res.json({ message: 'Blood pressure entry updated' });
     } else {
-      res.status(404).json({ message: 'Entry not found or not authorized' }); 
+      res.status(404).json({ message: 'Entry not found or not authorized' });
     }
   } catch (e) {
     console.error('error', e.message);
-    res.status(500).json({ message: 'Error updating blood pressure' }); 
+    res.status(500).json({ message: 'Error updating blood pressure' });
   }
 };
 
-// Poistetaan merkintä
+// poistetaan mittaus ID:n perusteella
 const deleteBloodPressureEntry = async (req, res) => {
   const { id } = req.params;
-  const userId = req.user.user_id; // haetaan tokenista
- 
+  const userId = req.user.user_id;
+
   try {
     const success = await deleteBloodPressure(id, userId);
-    
+
     if (success) {
       res.json({ message: 'Blood pressure entry deleted' });
     } else {
@@ -105,13 +120,14 @@ const deleteBloodPressureEntry = async (req, res) => {
     }
   } catch (e) {
     console.error('error', e.message);
-    res.status(500).json({ message: 'Error deleting blood pressure' }); 
+    res.status(500).json({ message: 'Error deleting blood pressure' });
   }
 };
 
-
-export { getBloodPressures, postBloodPressure, putBloodPressure, deleteBloodPressureEntry, getBloodPressureById };
-
-
-
-
+export {
+  getBloodPressures,
+  getBloodPressureById,
+  postBloodPressure,
+  putBloodPressure,
+  deleteBloodPressureEntry,
+};

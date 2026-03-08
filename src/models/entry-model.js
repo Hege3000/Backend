@@ -1,5 +1,5 @@
 // Note: db functions are async and must be called with await from the controller
-// How to handle errors in controller?
+
 import promisePool from '../utils/database.js';
 
 const listAllEntries = async () => {
@@ -39,6 +39,7 @@ const findEntryById = async (id) => {
   }
 };
 
+// 
 const addEntry = async (entry) => {
   const {user_id, entry_date, mood, weight, sleep_hours, notes} = entry;
   const sql = `INSERT INTO DiaryEntries (user_id, entry_date, mood, weight, sleep_hours, notes)
@@ -54,6 +55,7 @@ const addEntry = async (entry) => {
   }
 };
 
+// poistetaan päiväkirjamerkintä sen id:n perusteella
 const removeEntryById = async (entryId, userId) => {
   const sql = 'DELETE from DiaryEntries WHERE entry_id = ? AND user_id = ?';
   const [result] = await promisePool.execute(sql, [entryId, userId]);
@@ -61,4 +63,20 @@ const removeEntryById = async (entryId, userId) => {
   return result.affectedRows;
 };
 
-export {listAllEntries, findEntryById, addEntry, listAllEntriesByUserId, removeEntryById};
+// päivitetään päiväkirjamerkintä entry_id:n ja user_id:n perusteella
+const updateEntry = async (entryId, userId, entry) => {
+  const { entry_date, mood, weight, sleep_hours, notes } = entry;
+  const sql = `UPDATE DiaryEntries 
+               SET entry_date = ?, mood = ?, weight = ?, sleep_hours = ?, notes = ?
+               WHERE entry_id = ? AND user_id = ?`;
+  const params = [entry_date, mood, weight, sleep_hours, notes, entryId, userId];
+  try {
+    const [result] = await promisePool.execute(sql, params);
+    return result.affectedRows > 0;
+  } catch (e) {
+    console.error('error', e.message);
+    return {error: e.message};
+  }
+};
+
+export {listAllEntries, findEntryById, addEntry, listAllEntriesByUserId, removeEntryById, updateEntry};

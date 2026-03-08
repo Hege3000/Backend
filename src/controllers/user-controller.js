@@ -1,13 +1,13 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import {addUser, findUserByUsername, listAllUsers} from '../models/user-model.js';
+import {addUser, findUserByUsername, listAllUsers, findUserById, updateUser, removeUser} from '../models/user-model.js';
 
 // TODO: lisää tietokantafunktiot user modeliin
 // ja käytä niitä täällä
 
-// TODO: getUserById
-// TODO: putUserById
-// TODO: deleteUserById
+// TODO: getUserById - tehty minä ja Claude 
+// TODO: putUserById - tehty minä ja Claude
+// TODO: deleteUserById - tehty minä ja Claude
 
 
 const getUsers = async (req, response) => {
@@ -36,7 +36,7 @@ const postUser = async (pyynto, vastaus) => {
   vastaus.status(201).json({message: 'new user added', user_id: newUserId});
 };
 
-// Tietokantaversio valmis
+
 const postLogin = async (req, res) => {
   const {username, password} = req.body;
   // haetaan käyttäjä-objekti käyttäjän nimen perusteella
@@ -62,5 +62,65 @@ const postLogin = async (req, res) => {
 const getMe = (req, res) => {
   res.json(req.user);
 };
+// hae käyttäjä ID:n perusteella
+const getUserById = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const user = await findUserById(userId);
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({message: 'User not found'});
+    }
+  } catch (e) {
+    console.error('error', e.message);
+    res.status(500).json({message: 'Error fetching user'});
+  }
+};
 
-export {getUsers, postUser, postLogin, getMe};
+// päivitä käyttäjän tiedot - vain oma profiili
+const putUser = async (req, res) => {
+  const userId = req.params.id;
+  const {username, email} = req.body;
+
+  // tarkistetaan että käyttäjä muokkaa vain omaa profiiliaan
+  if (req.user.user_id !== Number(userId)) {
+    return res.status(403).json({message: 'Not authorized to update this user'});
+  }
+
+  try {
+    const success = await updateUser(userId, {username, email});
+    if (success) {
+      res.json({message: 'User updated'});
+    } else {
+      res.status(404).json({message: 'User not found'});
+    }
+  } catch (e) {
+    console.error('error', e.message);
+    res.status(500).json({message: 'Error updating user'});
+  }
+};
+
+// poista käyttäjä - vain oma profiili
+const deleteUser = async (req, res) => {
+  const userId = req.params.id;
+
+  // tarkistetaan että käyttäjä poistaa vain oman profiilinsa
+  if (req.user.user_id !== Number(userId)) {
+    return res.status(403).json({message: 'Not authorized to delete this user'});
+  }
+
+  try {
+    const success = await removeUser(userId);
+    if (success) {
+      res.json({message: 'User deleted'});
+    } else {
+      res.status(404).json({message: 'User not found'});
+    }
+  } catch (e) {
+    console.error('error', e.message);
+    res.status(500).json({message: 'Error deleting user'});
+  }
+};
+
+export {getUsers, postUser, postLogin, getMe, getUserById, putUser, deleteUser};
